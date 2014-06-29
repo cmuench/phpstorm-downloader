@@ -1,0 +1,9 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+$application = new \Symfony\Component\Console\Application('phpstorm-downloader', '1.0.0');
+$application->add(new \CMuench\PHPStormDownloader\Command\DownloadCommand());
+$application->add(new \CMuench\PHPStormDownloader\Command\CleanCommand());
+$application->run();

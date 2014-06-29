@@ -1,0 +1,25 @@
+{
+    "name": "cmuench/phpstorm-downloader",
+    "type": "application",
+    "keywords": ["PHPStorm", "Downloader", "Download", "Installer"],
+    "description": "Download PHP Storm",
+    "require": {
+        "php": ">=5.4.0",
+        "fabpot/goutte": "2.*",
+        "symfony/console": "2.5",
+        "symfony/filesystem": "2.5",
+        "symfony/finder": "2.5",
+        "symfony/process": "2.5"
+    },
+    "autoload": {
+        "psr-4": { "CMuench\\PHPStormDownloader\\": "src" }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Christian Münch",
+            "email": "christian@muench-worms.de"
+        }
+    ],
+    "minimum-stability": "dev"
+}

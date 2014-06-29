@@ -1,0 +1,24 @@
+
+{
+    "alias": "phpstorm-downloader.phar",
+    "output": "phpstorm-downloader.phar",
+    "chmod": "0755",
+    "compactors": [
+        "Herrera\\Box\\Compactor\\Php"
+    ],
+    "extract": false,
+    "files": [
+        "LICENSE"
+    ],
+    "directories": ["src"],
+    "finder": [
+        {
+            "name": ["*.php", "*.pem*"],
+            "exclude": ["Tests", "tests"],
+            "in": "vendor"
+        }
+    ],
+    "stub": true,
+    "main": "bin/phpstorm-downloader",
+    "web": false
+}
