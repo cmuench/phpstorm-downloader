@@ -6,12 +6,12 @@ if ($uri = \Phar::running()) {
 } elseif (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     require_once __DIR__ . '/../vendor/autoload.php';
 } elseif (file_exists(__DIR__ . '/../../../vendor/autoload.php')) {
-    require_once __DIR__ . '/../vendor/autoload.php';
+    require_once __DIR__ . '/../../../vendor/autoload.php';
 } else {
     throw new \Exception('Could not find any autoloader');
 }
 
-$application = new \Symfony\Component\Console\Application('phpstorm-downloader', '1.0.4');
+$application = new \Symfony\Component\Console\Application('phpstorm-downloader', '1.0.5');
 $application->add(new \CMuench\PHPStormDownloader\Command\DownloadCommand());
 $application->add(new \CMuench\PHPStormDownloader\Command\CleanCommand());
 $application->run();
