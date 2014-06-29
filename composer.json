@@ -21,5 +21,6 @@
             "email": "christian@muench-worms.de"
         }
     ],
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "bin": ["bin/phpstorm-downloader"]
 }
