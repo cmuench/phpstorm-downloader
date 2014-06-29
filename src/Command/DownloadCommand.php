@@ -46,6 +46,7 @@ class DownloadCommand extends Command
 
                         $output->write('<comment>Download            : </comment>');
                         $downloadProcess = new Process("wget $downloadUrl -O phpstorm.tar.gz");
+                        $downloadProcess->setTimeout(3600);
                         $downloadProcess->run();
 
                         $output->writeln('<info>OK</info>');
