@@ -12,7 +12,7 @@ Requirements:
 ## Installation
 
 ```
-compoer.phar install
+composer.phar install
 ```
 
 or create phar file. See "Create phar file".
@@ -26,7 +26,6 @@ $> bin/phpstorm-downloader download <target-folder>
 ```
 
 Default target folder is: $HOME/opt
-```
 
 ### Cleanup
 
