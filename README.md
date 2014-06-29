@@ -17,6 +17,14 @@ composer.phar install
 
 or create phar file. See "Create phar file".
 
+Or via composer.phar
+
+```
+$> composer.phar global require 'cmuench/phpstorm-downloader=1.0.0'
+```
+
+Call it as ~/.composer/vendor/bin/phpstorm-downloader
+
 ## Usage
 
 ### Download
