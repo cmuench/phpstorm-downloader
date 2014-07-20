@@ -29,6 +29,8 @@ class DownloadCommand extends Command
             throw new \LogicException('Folder ' . $targetFolder . ' does not exist.');
         }
 
+        $currentFolders = glob(sprintf("%s/*", $targetFolder), GLOB_ONLYDIR);
+
         try {
             $client = new Client();
             $output->write('<comment>Request PhpStorm EAP: </comment>');
@@ -38,11 +40,18 @@ class DownloadCommand extends Command
                 ->reduce(function (Crawler $node, $i) {
                     return strstr($node->text(), '.tar.gz');
                 })
-                ->each(function ($node) use ($targetFolder, $output) {
+                ->each(function ($node) use ($targetFolder, $output, $currentFolders) {
                     $downloadUrl = $node->attr('href');
                     if (preg_match('/PhpStorm-EAP-(\d+\.\d+)\.tar\.gz/i', $node->text(), $matches)) {
                         $phpStormVersion = $matches[1];
                         $output->writeln('<comment>Found EAP Version   : </comment><info>' . $phpStormVersion . '</info>');
+
+                        foreach($currentFolders as $folder) {
+                            if(preg_match(sprintf('/%s/', $phpStormVersion), $folder)) {
+                                $output->writeln('<info>No new version available</info>');
+                                return;
+                            }
+                        }
 
                         $output->write('<comment>Download            : </comment>');
                         $downloadProcess = new Process("wget $downloadUrl -O phpstorm.tar.gz");
