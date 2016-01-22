@@ -20,6 +20,7 @@ class DownloadCommand extends Command
             ->setName('download')
             ->setDescription('Download PhpStorm to target folder and create a Symlink "PhpStorm" to latest version.')
             ->addArgument('target-folder', InputArgument::OPTIONAL, 'Target Folder for Installation', $_SERVER['HOME'] . '/opt')
+            ->addOption('symlink-name', NULL, InputOption::VALUE_OPTIONAL, 'Filename of the symlink', 'PhpStorm')
             ->addOption('download', null, InputOption::VALUE_NONE, 'Download even if target version already exists')
             ->addOption('stable', null, InputOption::VALUE_NONE, 'Use stable release, not EAP')
         ;
@@ -38,6 +39,8 @@ class DownloadCommand extends Command
             throw new \LogicException('Folder ' . $targetFolder . ' does not exist.');
         }
 
+        $symlinkName = basename($input->getOption('symlink-name'));
+
         $forceDownload = (bool) $input->getOption('download');
 
         $stable = (bool) $input->getOption('stable');
@@ -47,12 +50,12 @@ class DownloadCommand extends Command
         $repo->initialize($output);
 
         foreach ($repo->getSources() as $source) {
-            $this->install($output, $targetFolder, $forceDownload, $source);
+            $this->install($output, $targetFolder, $symlinkName, $forceDownload, $source);
             break;
         }
     }
 
-    private function install(OutputInterface $output, $targetFolder, $forceDownload, HttpSource $source)
+    private function install(OutputInterface $output, $targetFolder, $symlinkName, $forceDownload, HttpSource $source)
     {
         $version = $source->getVersion();
 
@@ -97,12 +100,11 @@ class DownloadCommand extends Command
         }
 
         $output->write('<comment>Linking...</comment>');
-
-        $linkProcess = new Process(
-            sprintf(
-                'cd %2$s; ln -s -f %1$s PhpStorm', escapeshellarg($extractedFolder), escapeshellarg($targetFolder)
-            )
+        $command = sprintf(
+	    'cd %2$s && ln -s -f -T %1$s %3$s', escapeshellarg($extractedFolder), escapeshellarg($targetFolder),
+	    escapeshellarg($symlinkName)
         );
+        $linkProcess = new Process($command);
         $linkProcess->run();
         $output->writeln(' <info>OK</info>');
         if (!$linkProcess->isSuccessful()) {
