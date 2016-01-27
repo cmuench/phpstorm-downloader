@@ -101,8 +101,10 @@ class DownloadCommand extends Command
 
         $output->write('<comment>Linking...</comment>');
         $command = sprintf(
-	    'cd %2$s && ln -s -f -T %1$s %3$s', escapeshellarg($extractedFolder), escapeshellarg($targetFolder),
-	    escapeshellarg($symlinkName)
+            'cd %2$s && (test -e %3$s && unlink %3$s ; ln -s -f %1$s %3$s)',
+            escapeshellarg($extractedFolder),
+            escapeshellarg($targetFolder),
+            escapeshellarg($symlinkName)
         );
         $linkProcess = new Process($command);
         $linkProcess->run();
