@@ -64,52 +64,63 @@ class DownloadCommand extends Command
         if (is_dir($targetFolder . '/' . $extractedFolder) && false === $forceDownload) {
             $output->writeln(
                 sprintf(
-                    '<comment>Phpstorm <info>%s</info> already exists, skipping download..</comment>', $version
+                    '<comment>Phpstorm <info>%s</info> already exists, skipping download.</comment>', $version
                 )
             );
         } else {
             $output->write(
                 sprintf(
-                    '<comment>Download %s </comment><info>%s</info><comment>...</comment>', $source->getName(), $version
+                    '<comment>Download %s </comment><info>%s</info><comment>... </comment>', $source->getName(), $version
                 )
             );
 
             $downloadProcess = new Process(sprintf("wget %s -O phpstorm.tar.gz", escapeshellarg($source->getUrl())));
             $downloadProcess->setTimeout(3600);
-            $downloadProcess->run();
+            $this->runProcess($output, $downloadProcess);
+            $output->writeln('<info>OK</info>');
 
-            $output->writeln(' <info>OK</info>');
-            if (!$downloadProcess->isSuccessful()) {
-                throw new \RuntimeException($downloadProcess->getErrorOutput());
-            }
-
-
-            $output->write('<comment>Extracting...</comment>');
+            $output->write('<comment>Extracting... </comment>');
             $extractProcess = new Process(
                 sprintf(
                     'tar xfz phpstorm.tar.gz; rm phpstorm.tar.gz; mv %1$s %2$s'
                     , escapeshellarg($extractedFolder), escapeshellarg($targetFolder)
                 )
             );
-            $extractProcess->run();
-            $output->writeln(' <info>OK</info>');
-            if (!$extractProcess->isSuccessful()) {
-                throw new \RuntimeException($extractProcess->getErrorOutput());
-            }
-
+            $this->runProcess($output, $extractProcess);
+            $output->writeln('<info>OK</info>');
         }
 
-        $output->write('<comment>Linking...</comment>');
+        $output->writeln(
+            sprintf(
+                '<comment>Symlinking <info>%s</info> to <info>%s</info> in <info>%s</info></comment>.',
+                $symlinkName, $extractedFolder, $targetFolder
+            )
+        );
         $command = sprintf(
-	    'cd %2$s && ln -s -f -T %1$s %3$s', escapeshellarg($extractedFolder), escapeshellarg($targetFolder),
-	    escapeshellarg($symlinkName)
+            'cd %2$s && (test -e %3$s && unlink %3$s ; ln -s -f %1$s %3$s)',
+            escapeshellarg($extractedFolder),
+            escapeshellarg($targetFolder),
+            escapeshellarg($symlinkName)
         );
         $linkProcess = new Process($command);
-        $linkProcess->run();
-        $output->writeln(' <info>OK</info>');
-        if (!$linkProcess->isSuccessful()) {
-            throw new \RuntimeException($linkProcess->getErrorOutput());
+        $this->runProcess($output, $linkProcess);
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @param Process $process
+     */
+    private function runProcess(OutputInterface $output, Process $process)
+    {
+        if ($output->getVerbosity() >= $output::VERBOSITY_VERBOSE) {
+            $output->writeln(
+                sprintf('<comment>Execute: <info>%s</info></comment>', $process->getCommandLine())
+            );
         }
 
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new \RuntimeException($process->getErrorOutput());
+        }
     }
 }
